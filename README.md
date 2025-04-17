@@ -1,5 +1,4 @@
 SMNotes                       
-Created by: JustSMN
 
 Welcome to my golang notes web application!  
 This application uses http handles to create, view, and delete notes, and it saves all notes into a postgresql database.

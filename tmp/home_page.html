@@ -1,0 +1,76 @@
+{{ define "home_page" }}
+
+{{ template "header" }}
+
+
+<!-- <main class="px-3">
+    <h1>Your notes</h1>
+    
+    
+    {{ range . }}
+    <div class="alert alert-danger">
+      <h3>{{ .Title }}</h3>
+      <a href="/note/{{.Id}}" class="btn btn-danger">Read</a>
+    </div>
+    {{ else }}
+    <p class="lead">Empty!</p>
+    {{ end }}
+    
+    
+    <p class="lead">
+      <a href="#" class="btn btn-lg btn-light fw-bold border-white bg-white">Узнать больше</a>
+    </p>
+  </main> -->
+  <!-- <body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <main style="width: 80%; max-width: 800px;">
+        <h1 style="text-align: center; color: #333; font-size: 1.5em; margin-bottom: 20px;">Ваши записи</h1>
+
+        {{ range . }}
+        <div class="alert" style="background-color: #dcceec; border: 1px solid #dcceec; border-radius: 0.25rem; padding: 0.75rem; margin-bottom: 15px; width: 100%; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="color: #495057; font-size: 1.1em; margin: 0;">{{ .Title }}</h3>
+            <a href="/note/{{.Id}}" class="btn" style="background-color: hsl(211, 84%, 62%); color: white; border: none; padding: 0.5rem 0.75rem; border-radius: 0.25rem; cursor: pointer; text-decoration: none; font-size: 0.8em;">Читать</a>
+        </div>
+        {{ else }}
+        <p class="lead" style="text-align: center; color: #6c757d; font-size: 1em;">Пусто!</p>
+        {{ end }}
+
+        <p class="lead" style="text-align: center; margin-top: 20px;">
+            <a href="#" class="btn" style="background-color: #28a745; color: white; border: none; padding: 0.5rem 0.75rem; border-radius: 0.25rem; cursor: pointer; text-decoration: none; font-size: 0.8em;">Узнать больше</a>
+        </p>
+    </main>
+</body> -->
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <main style="width: 80%; max-width: 800px;">
+        <div style="background-color: rgb(232, 212, 239); padding: 15px; border-radius: 0.5rem; margin-bottom: 20px; text-align: center;">
+            <h1 style="color: #333; font-size: 1.5em; margin: 0;">Your Notes</h1>
+        </div>
+
+        <div style="max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #dcceec; border-radius: 0.5rem;">
+            {{ if . }}
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                {{ range . }}
+                <li style="margin-bottom: 10px; background-color: #dcceec; padding: 10px; border-radius: 0.25rem; border: 1px solid #dcceec;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="color: #495057; font-size: 1.1em; margin: 0;">{{ .Title }}</h3>
+                        <a href="/note/{{.Id}}" class="btn" style="background-color: #72aff0; color: white; border: none; padding: 0.5rem 0.75rem; border-radius: 0.25rem; cursor: pointer; text-decoration: none; font-size: 0.8em;">Читать</a>
+                    </div>
+                </li>
+                {{ end }}
+            </ul>
+            {{ else }}
+            <p class="lead" style="text-align: center; color: #6c757d; font-size: 1em;">Empty!</p>
+            {{ end }}
+        </div>
+    
+        <p class="lead" style="text-align: center; margin-top: 15px;">
+            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="btn" style="background-color: hsl(134, 45%, 51%); color: white; border: none; padding: 0.4rem 2rem; border-radius: 0.25rem; cursor: pointer; text-decoration: none; font-size: 0.8em;">Learn more</a>
+        </p>
+       
+    </main>
+</body>
+
+
+{{ template "footer"}}
+
+
+{{ end }}

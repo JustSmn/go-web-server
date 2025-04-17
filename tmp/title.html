@@ -1,0 +1,127 @@
+{{ define "title" }}
+
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMNotes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: hsl(294, 10%, 63%);
+        }
+        
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            padding: 1px 0; /* Отступы сверху и снизу */
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        nav ul {
+            margin-right: 150px;
+            list-style-type: none;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        nav ul li {
+            float: right;
+        }
+
+        a img {
+            margin-left: 150px;
+            float: left;
+        }
+
+        nav ul li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        nav ul li a:hover {
+            background-color: #111;
+        }
+
+        main {
+            padding: 1em;
+        }
+
+        footer {
+            margin-top: 100em;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .full-page-image {
+            width: 100%;
+            height: 90vh; /* Занимает всю высоту экрана */
+            object-fit: cover; /* Растягивает и обрезает изображение */
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            margin-top: 81px; /* Отступ, равный высоте header */
+        }
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="#">
+                <img src="/static/SMNotes1.png" width="125px" height="50px" float="left">
+            </a>
+            <ul>
+                <li><a href="/create">New</a></li>
+                <li><a href="/">Home</a></li>
+                <li><a href="/title">Title</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <img src="" alt="" class="full-page-image">
+
+    <footer>
+       <!-- Your footer content here -->
+    </footer>
+</body>
+</html>
+
+
+<body>
+
+    <img src="/static/ttle1.png" alt="" class="full-page-image">
+
+    <footer>
+        <!-- Your footer content here -->
+    </footer>
+</body>
+
+<footer>
+
+</footer>
+</body>
+</html>
+
+{{ end }}

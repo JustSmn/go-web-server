@@ -1,0 +1,19 @@
+{{ define "create" }}
+
+{{ template "header"}}
+
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <main class="px-3" style="background-color: #c8b7dc; border-radius: 8px; box-shadow: 0 2px 10px #2323231a; padding: 40px; width: 500px;">
+        <h1 style="text-align: center; color: #333;">Note Addition Form</h1>
+        <form action="/save_note" method="post">
+            <input type="text" name="title" id="title" placeholder="Enter the title of your note" class="form-control" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px;">
+            <textarea name="full_text" id="full_text" class="form-control" placeholder="Enter the text of your note" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+            <button class="btn btn-warning" style="background-color: #edab49; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; transition: background-color 0.3s;">Create</button>
+        </form>
+    </main>
+</body>
+
+
+{{ template "footer"}}
+
+{{ end }}

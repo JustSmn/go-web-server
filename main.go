@@ -5,160 +5,134 @@ import (
 	"html/template"
 	"net/http"
 
-	"database/sql"
-
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Note struct {
-	Id              uint16
-	Title, FullText string
+	Id       uint16 `gorm:"primaryKey"` // Добавить тег для первичного ключа
+	Title    string
+	FullText string
 }
 
-var notes = []Note{}
-var showNote = Note{}
+var db *gorm.DB
+var notes []Note
+var showNote Note
 
-func home_page(w http.ResponseWriter, r *http.Request) {
-	//fmt.Fprintf(w, "Hello World!")
+func initDB() {
+	var err error
+	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable"
+
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic(fmt.Errorf("failed to connect to database: %v", err))
+	}
+
+	err = db.AutoMigrate(&Note{})
+	if err != nil {
+		panic(fmt.Errorf("failed to migrate database: %v", err))
+	}
+
+	fmt.Println("Successfully connected to database!")
+}
+
+func homePage(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("tmp/footer.html", "tmp/header.html", "tmp/home_page.html")
 	if err != nil {
-		panic(err)
+		http.Error(w, "Ошибка загрузки шаблона", http.StatusInternalServerError)
+		return
 	}
 
-	db, err := sql.Open("mysql", "mysql:mysql@tcp(127.0.0.1:3306)/golang")
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	res, err := db.Query("SELECT * FROM `notes`")
-	if err != nil {
-		panic(err)
+	// Получение всех заметок из базы данных
+	if err := db.Find(&notes).Error; err != nil {
+		http.Error(w, "Ошибка получения заметок", http.StatusInternalServerError)
+		return
 	}
 
-	notes = []Note{}
-	for res.Next() {
-		var note Note
-		err = res.Scan(&note.Id, &note.Title, &note.FullText)
-		if err != nil {
-			panic(err)
-		}
-		notes = append(notes, note)
-	}
 	t.ExecuteTemplate(w, "home_page", notes)
-
 }
 
 func create(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("tmp/footer.html", "tmp/header.html", "tmp/create.html")
 	if err != nil {
-		panic(err)
+		http.Error(w, "Ошибка загрузки шаблона", http.StatusInternalServerError)
+		return
 	}
-
 	t.ExecuteTemplate(w, "create", nil)
 }
 
-func save_note(w http.ResponseWriter, r *http.Request) {
+func saveNote(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
-	full_text := r.FormValue("full_text")
+	fullText := r.FormValue("full_text")
 
-	db, err := sql.Open("mysql", "mysql:mysql@tcp(127.0.0.1:3306)/golang")
-	if err != nil {
-		panic(err)
+	// Создание новой заметки и сохранение в базе данных
+	note := Note{Title: title, FullText: fullText}
+	if err := db.Create(&note).Error; err != nil {
+		http.Error(w, "Ошибка сохранения заметки", http.StatusInternalServerError)
+		return
 	}
-	defer db.Close()
-
-	insert, err := db.Query(fmt.Sprintf("INSERT INTO `notes` (`Title`, `FullText`) VALUES('%s', '%s')", title, full_text))
-	if err != nil {
-		panic(err)
-	}
-	defer insert.Close()
-
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func delete_note(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm() // Парсинг формы
+func deleteNote(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
 	noteId := r.FormValue("id")
-	//noteId := r.URL.Path[len("/note/"):]
 
-	db, err := sql.Open("mysql", "mysql:mysql@tcp(127.0.0.1:3306)/golang")
-	if err != nil {
-		panic(err)
+	// Удаление заметки из базы данных
+	if err := db.Delete(&Note{}, noteId).Error; err != nil {
+		http.Error(w, "Ошибка удаления заметки", http.StatusInternalServerError)
+		return
 	}
-	defer db.Close()
-
-	delete, err := db.Exec(fmt.Sprintf("DELETE FROM `notes` WHERE `id` = '%s'", noteId))
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(delete)
-
 	http.Redirect(w, r, "/", http.StatusSeeOther)
-
 }
 
-func show_note(w http.ResponseWriter, r *http.Request) {
+func showNoteHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	t, err := template.ParseFiles("tmp/show.html", "tmp/header.html", "tmp/footer.html")
 	if err != nil {
-		panic(err)
+		http.Error(w, "Ошибка загрузки шаблона", http.StatusInternalServerError)
+		return
 	}
 
-	db, err := sql.Open("mysql", "mysql:mysql@tcp(127.0.0.1:3306)/golang")
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
+	var note Note
 
-	res, err := db.Query(fmt.Sprintf("SELECT * FROM `notes` WHERE `id` = '%s' ", vars["id"]))
-	if err != nil {
-		panic(err)
+	// Получение заметки по ID
+	if err := db.First(&note, vars["id"]).Error; err != nil {
+		http.Error(w, "Ошибка получения заметки", http.StatusInternalServerError)
+		return
 	}
 
-	showNote = Note{}
-
-	for res.Next() {
-		var post Note
-		err = res.Scan(&post.Id, &post.Title, &post.FullText)
-		if err != nil {
-			panic(err)
-		}
-
-		showNote = post
-	}
-
+	showNote = note
 	t.ExecuteTemplate(w, "show", showNote)
 }
 
 func title(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("tmp/title.html", "tmp/header.html", "tmp/footer.html")
 	if err != nil {
-		panic(err)
+		http.Error(w, "Ошибка загрузки шаблона", http.StatusInternalServerError)
+		return
 	}
 	t.ExecuteTemplate(w, "title", nil)
-
 }
 
 func handleFunc() {
 	rtr := mux.NewRouter()
-
-	rtr.HandleFunc("/", home_page).Methods("GET")
+	rtr.HandleFunc("/", homePage).Methods("GET")
 	rtr.HandleFunc("/create", create).Methods("GET")
-	rtr.HandleFunc("/save_note", save_note).Methods("POST")
-	rtr.HandleFunc("/note/{id:[0-9]+}", show_note).Methods("GET")
-	rtr.HandleFunc("/delete_note", delete_note).Methods("POST")
+	rtr.HandleFunc("/save_note", saveNote).Methods("POST")
+	rtr.HandleFunc("/note/{id:[0-9]+}", showNoteHandler).Methods("GET")
+	rtr.HandleFunc("/delete_note", deleteNote).Methods("POST")
 	rtr.HandleFunc("/title", title).Methods("GET")
 
 	http.Handle("/", rtr)
-
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
-
 	http.ListenAndServe(":8080", nil)
 }
 
 func main() {
+	fmt.Println("Starting server...")
+	initDB() // Инициализация базы данных
 	handleFunc()
 }

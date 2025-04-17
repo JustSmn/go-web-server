@@ -14,7 +14,7 @@ How to Use:
    `PS C:\Programming\smnotes> go mod download`
 
 3. Run main.go in terminal:\
-   `PS C:\Programming\ai-tg-bot> go run main.go`
+   `PS C:\Programming\smnotes> go run main.go`
 
 4. Go to `http://localhost:8080/` in browser
 
